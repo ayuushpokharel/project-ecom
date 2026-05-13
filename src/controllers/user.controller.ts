@@ -70,4 +70,31 @@ export const getById = async (
     }
 };
 
-//! delete user
+//! Delete User
+export const deleteUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
+    try {
+        const { id } = req.params;
+        const user = await User.findByIdAndDelete(id);
+        if (!user) {
+            res.status(404).json({
+                message: "User not found",
+            });
+            return;
+        }
+        res.status(200).json({
+            message: "User deleted successfully",
+        });
+    } catch (error: any) {
+        next({
+            message: error?.message || "Something went wrong",
+            status: error?.status || "error",
+            success: false,
+            data: null,
+            statusCode: error?.statusCode || 500,
+        });
+    }
+};
