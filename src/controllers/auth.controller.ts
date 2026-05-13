@@ -31,7 +31,7 @@ export const register = async (
         //* create User instance
         const user = new User({ full_name, email, password, phone });
 
-        //! hanlde profile image
+        //! handle profile image
 
         //* save user
         await user.save();
