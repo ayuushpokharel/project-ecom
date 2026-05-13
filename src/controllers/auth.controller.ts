@@ -119,6 +119,8 @@ export const login = async (
 };
 
 //! update profile
+// const userId = (req as any).user?.id;
+// const { full_name, phone } = req.body;
 
 //! get profile
 
