@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import User from "../models/user.model";
-//crud user
+// crud user
 
 //! get all users
 export const getAll = async (
@@ -18,7 +18,7 @@ export const getAll = async (
             message: "All users fetched",
             data: users,
             success: true,
-            status: "success",
+            status: "succcess",
         });
     } catch (error: any) {
         next({
@@ -46,15 +46,15 @@ export const getById = async (
 
         //* user not found error
         if (!user) {
-            const error: any = new Error("User not found");
+            const error: any = new Error("User not found ");
             error.statusCode = 404;
             error.status = "fail";
             throw error;
         }
 
-        //* status response
+        //* success response
         res.status(200).json({
-            message: "All users fetched",
+            message: `User ${id} fetched`,
             data: user,
             success: true,
             status: "success",
@@ -69,3 +69,5 @@ export const getById = async (
         });
     }
 };
+
+//! delete user
