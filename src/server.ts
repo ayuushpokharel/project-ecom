@@ -8,6 +8,6 @@ connectDatabase(DB_URI);
 
 //! listening on port
 app.listen(PORT, () => {
-    console.log(`server is running at http://loclhost:${PORT}`);
+    console.log(`server is running at http://localhost:${PORT}`);
     console.log("Press CTRL + C to close the server");
 });

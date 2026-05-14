@@ -63,7 +63,7 @@ export const login = async (
     try {
         const { email, password } = req.body;
 
-        //* validate
+        //* validate email and password
         if (!email) {
             const error: any = new Error("email is required");
             error.statusCode = 400;
@@ -78,7 +78,7 @@ export const login = async (
         }
 
         //! find user by email
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email: email });
         if (!user) {
             const error: any = new Error("Invalid email or password");
             error.statusCode = 401;
@@ -98,14 +98,9 @@ export const login = async (
         //! success response
         res.status(200).json({
             message: "Login successful",
-            data: {
-                _id: user._id,
-                full_name: user.full_name,
-                email: user.email,
-                phone: user.phone,
-            },
-            success: true,
+            data: user,
             status: "success",
+            success: true,
         });
     } catch (error: any) {
         next({
@@ -117,6 +112,8 @@ export const login = async (
         });
     }
 };
+
+// todo : generate access token
 
 //! update profile
 // const userId = (req as any).user?.id;
