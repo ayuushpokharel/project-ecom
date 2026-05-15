@@ -135,6 +135,9 @@ export const updateCategories = async (
             category.description = description;
         }
 
+        //* save category
+        await category.save();
+
         //* success response
         res.status(200).json({
             message: "category is updated successfully",

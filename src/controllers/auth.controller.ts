@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import User from "../models/user.model";
+import AppError from "../utils/appError.utils";
 
 //! register
 export const register = async (
@@ -10,22 +11,17 @@ export const register = async (
     try {
         const { full_name, email, password, phone } = req.body;
         if (!full_name) {
-            const error: any = new Error("full_name is required");
-            error.statusCode = 400;
-            error.status = "fail";
-            throw error;
+            // const error: any = new Error("full_name is required");
+            // error.statusCode = 400;
+            // error.status = "fail";
+            // throw error;
+            throw new AppError("Full Name is required", 400);
         }
         if (!email) {
-            const error: any = new Error("email is required");
-            error.statusCode = 400;
-            error.status = "fail";
-            throw error;
+            throw new AppError("email is required", 400);
         }
         if (!password) {
-            const error: any = new Error("password is required");
-            error.statusCode = 400;
-            error.status = "fail";
-            throw error;
+            throw new AppError("password is required", 400);
         }
 
         //* create User instance
@@ -44,13 +40,16 @@ export const register = async (
             status: "success",
         });
     } catch (error: any) {
-        next({
-            message: error?.message || "Something went wrong",
-            status: error?.status || "error",
-            success: false,
-            data: null,
-            statusCode: error?.statusCode || 500,
-        });
+        next(
+            // {
+            // message: error?.message || "Something went wrong",
+            // status: error?.status || "error",
+            // success: false,
+            // data: null,
+            // statusCode: error?.statusCode || 500,
+            // }
+            error,
+        );
     }
 };
 
@@ -65,34 +64,22 @@ export const login = async (
 
         //* validate email and password
         if (!email) {
-            const error: any = new Error("email is required");
-            error.statusCode = 400;
-            error.status = "fail";
-            throw error;
+            throw new AppError("email is required", 400);
         }
         if (!password) {
-            const error: any = new Error("password is required");
-            error.statusCode = 400;
-            error.status = "fail";
-            throw error;
+            throw new AppError("password is required", 400);
         }
 
         //! find user by email
         const user = await User.findOne({ email: email });
         if (!user) {
-            const error: any = new Error("Invalid email or password");
-            error.statusCode = 401;
-            error.status = "fail";
-            throw error;
+            throw new AppError("Invalid email or password", 401);
         }
 
         //! compare password with input password
         const isMatch = password === user.password;
         if (!isMatch) {
-            const error: any = new Error("Invalid email or password");
-            error.statusCode = 401;
-            error.status = "fail";
-            throw error;
+            throw new AppError("Invalid email or password", 401);
         }
 
         //! success response
@@ -103,13 +90,7 @@ export const login = async (
             success: true,
         });
     } catch (error: any) {
-        next({
-            message: error?.message || "Something went wrong",
-            status: error?.status || "error",
-            success: false,
-            data: null,
-            statusCode: error?.statusCode || 500,
-        });
+        next(error);
     }
 };
 
