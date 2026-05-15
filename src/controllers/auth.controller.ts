@@ -2,14 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import User from "../models/user.model";
 import AppError from "../utils/appError.utils";
 import { sendResponse } from "../utils/sendResponse.utils";
+import { catchAsync } from "../utils/astchAsync.utils";
 
 //! register
-export const register = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-) => {
-    try {
+export const register = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
         const { full_name, email, password, phone } = req.body;
         if (!full_name) {
             // const error: any = new Error("full_name is required");
@@ -45,27 +42,12 @@ export const register = async (
             data: user,
             statusCode: 201,
         });
-    } catch (error: any) {
-        next(
-            // {
-            // message: error?.message || "Something went wrong",
-            // status: error?.status || "error",
-            // success: false,
-            // data: null,
-            // statusCode: error?.statusCode || 500,
-            // }
-            error,
-        );
-    }
-};
+    },
+);
 
 //! login
-export const login = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-) => {
-    try {
+export const login = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
         const { email, password } = req.body;
 
         //* validate email and password
@@ -94,16 +76,15 @@ export const login = async (
             data: user,
             statusCode: 201,
         });
-    } catch (error: any) {
-        next(error);
-    }
-};
+    },
+);
 
 // todo : generate access token
 
 //! update profile
 // const userId = (req as any).user?.id;
 // const { full_name, phone } = req.body;
+// const update = catchAsync()
 
 //! get profile
 
