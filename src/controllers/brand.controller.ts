@@ -112,7 +112,6 @@ export const deleteBrand = catchAsync(
         //* success response
         sendResponse(res, {
             message: "brand deleted successfully",
-            data: brand,
             statusCode: 200,
         });
     },
