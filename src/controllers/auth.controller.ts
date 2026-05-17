@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import User from "../models/user.model";
 import AppError from "../utils/appError.utils";
 import { sendResponse } from "../utils/sendResponse.utils";
-import { catchAsync } from "../utils/astchAsync.utils";
+import { catchAsync } from "../utils/catchAsync.utils";
 
 //! register
 export const register = catchAsync(
