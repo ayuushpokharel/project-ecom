@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import ENV_CONFIG from "../config/env.config";
 
 type TPayLoad = {
-    _id: mongoose.Schema.Types.ObjectId;
+    _id: mongoose.Types.ObjectId;
     full_name?: string;
     role: Role;
     email: string;
@@ -15,6 +15,7 @@ export const generateToken = (payLoad: TPayLoad) => {
         const access_token = jwt.sign(payLoad, ENV_CONFIG.jwt_secret, {
             expiresIn: ENV_CONFIG.jwt_expiry as any,
         });
+        return access_token;
     } catch (error: any) {
         console.log(error);
         throw error;

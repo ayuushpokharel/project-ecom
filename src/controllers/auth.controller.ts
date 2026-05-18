@@ -4,6 +4,7 @@ import AppError from "../utils/appError.utils";
 import { sendResponse } from "../utils/sendResponse.utils";
 import { catchAsync } from "../utils/catchAsync.utils";
 import { comparePassword, hashPassword } from "../utils/bcrypt.utils";
+import { generateToken } from "../utils/jwt.utils";
 
 //! register
 export const register = catchAsync(
@@ -77,16 +78,27 @@ export const login = catchAsync(
             throw new AppError("Invalid email or password", 401);
         }
 
+        // todo : generate access token => jwt -> json web token
+        const payLoad = {
+            _id: user._id,
+            full_name: user.full_name,
+            email: user.email,
+            role: user.role,
+        };
+        const access_token = generateToken(payLoad);
+        // console.log(access_token);
+
         //! success response
         sendResponse(res, {
             message: "Login Successful",
-            data: user,
+            data: {
+                user,
+                access_token,
+            },
             statusCode: 201,
         });
     },
 );
-
-// todo : generate access token => jwt -> json web token
 
 //! update profile
 // const userId = (req as any).user?.id;
