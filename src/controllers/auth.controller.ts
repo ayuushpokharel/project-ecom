@@ -25,6 +25,8 @@ export const register = catchAsync(
         //* create User instance
         const user = new User({ full_name, email, password, phone });
 
+        //* hash password
+
         //! handle profile image
 
         //* save user
