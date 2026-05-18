@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 //! hash password
 export const hashPassword = async (password: string) => {
     try {
-        const salt = bcrypt.genSaltSync(10);
+        const salt = bcrypt.genSaltSync(10); // salt -> create a unique hash value even if the password are same
         const hash = bcrypt.hashSync(password, salt);
         return hash;
     } catch (error: any) {

@@ -3,6 +3,7 @@ import User from "../models/user.model";
 import AppError from "../utils/appError.utils";
 import { sendResponse } from "../utils/sendResponse.utils";
 import { catchAsync } from "../utils/catchAsync.utils";
+import { comparePassword, hashPassword } from "../utils/bcrypt.utils";
 
 //! register
 export const register = catchAsync(
@@ -26,6 +27,8 @@ export const register = catchAsync(
         const user = new User({ full_name, email, password, phone });
 
         //* hash password
+        const hash = await hashPassword(password);
+        user.password = hash;
 
         //! handle profile image
 
@@ -67,7 +70,9 @@ export const login = catchAsync(
         }
 
         //! compare password with input password
-        const isMatch = password === user.password;
+        // const isMatch = password === user.password; // with no hashing
+        const isMatch = await comparePassword(password, user.password); // after hashing
+
         if (!isMatch) {
             throw new AppError("Invalid email or password", 401);
         }
@@ -81,7 +86,7 @@ export const login = catchAsync(
     },
 );
 
-// todo : generate access token
+// todo : generate access token => jwt -> json web token
 
 //! update profile
 // const userId = (req as any).user?.id;
