@@ -21,7 +21,7 @@ router.post("/", createCategories);
 //! update
 router.put("/:id", updateCategories);
 
-//! delete
+//! remove category
 router.delete("/:id", removeCategories);
 
 export default router;
