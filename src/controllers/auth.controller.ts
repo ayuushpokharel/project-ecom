@@ -9,11 +9,16 @@ import { generateToken } from "../utils/jwt.utils";
 //! register
 export const register = catchAsync(async (req: Request, res: Response) => {
     const { full_name, email, password, phone } = req.body;
+
+    //* required field
+    // if (!full_name) {
+    // const error: any = new Error("full_name is required");
+    // error.statusCode = 400;
+    // error.status = "fail";
+    // throw error;
+    // }
+
     if (!full_name) {
-        // const error: any = new Error("full_name is required");
-        // error.statusCode = 400;
-        // error.status = "fail";
-        // throw error;
         throw new AppError("Full Name is required", 400);
     }
     if (!email) {
@@ -75,7 +80,7 @@ export const login = catchAsync(async (req: Request, res: Response) => {
         throw new AppError("Invalid email or password", 401);
     }
 
-    // todo : generate access token => jwt -> json web token
+    //* generate access token => jwt -> json web token
     const payLoad = {
         _id: user._id,
         full_name: user.full_name,
