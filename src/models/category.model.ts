@@ -1,7 +1,12 @@
 import mongoose from "mongoose";
 
+interface ICategorySchema extends Document {
+    name: string;
+    description?: string;
+}
+
 //! category schema =>  name:req , description: op
-const categorySchema = new mongoose.Schema(
+const categorySchema = new mongoose.Schema<ICategorySchema>(
     {
         name: {
             type: String,
