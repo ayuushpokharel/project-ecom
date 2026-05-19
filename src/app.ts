@@ -1,8 +1,9 @@
-import express, { Request, Response } from "express";
+import express, { NextFunction, request, Request, Response } from "express";
 import { errorHandler } from "./middlewares/errorHandler.middleware";
 
 //! importing routes
 import routes from "./routes";
+import AppError from "./utils/appError.utils";
 
 //! creating express app instance
 const app = express();
@@ -24,7 +25,11 @@ app.get("/", (req: Request, res: Response) => {
 //! using routes
 app.use("/api/v1", routes);
 
-//! 
+//! path not found error
+app.use((req: Request, res: Response) => {
+    const message = `cannot ${req.method} on ${req.url}`;
+    throw new AppError(message, 404);
+});
 
 //! error handler
 app.use(errorHandler);
