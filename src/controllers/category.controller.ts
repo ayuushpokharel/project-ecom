@@ -1,42 +1,26 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import Category from "../models/category.model";
+import { catchAsync } from "../utils/catchAsync.utils";
+import { sendResponse } from "../utils/sendResponse.utils";
+import AppError from "../utils/appError.utils";
 
 //! get all categories
-export const getCategories = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-) => {
-    try {
-        const filter = {};
-        //* get all categories
-        const categories = await Category.find(filter);
+export const getCategories = catchAsync(async (req: Request, res: Response) => {
+    const filter = {};
+    //* get all categories
+    const categories = await Category.find(filter);
 
-        //* success response
-        res.status(200).json({
-            message: "All categories fetched successfully",
-            data: categories,
-            status: "success",
-            success: true,
-        });
-    } catch (error: any) {
-        next({
-            message: error?.message || "something went wrong",
-            status: "error",
-            success: false,
-            data: null,
-            statusCode: error?.statusCode || 500,
-        });
-    }
-};
+    //* success response
+    sendResponse(res, {
+        message: "all categories fetched",
+        data: categories,
+        statusCode: 200,
+    });
+});
 
 //! get by id
-export const getCategoriesById = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-) => {
-    try {
+export const getCategoriesById = catchAsync(
+    async (req: Request, res: Response) => {
         //* category id
         const { id } = req.params;
 
@@ -44,87 +28,46 @@ export const getCategoriesById = async (
         const category = await Category.findOne({ _id: id });
 
         //* not found error
-        if (!category) {
-            const error: any = new Error("category not found");
-            error.statusCode = 404;
-            error.status = false;
-            throw error;
-        }
+        if (!category) throw new AppError("Category not found", 404);
 
         //* success response
-        res.status(200).json({
+        sendResponse(res, {
             message: `category ${id} fetched successfully`,
             data: category,
-            status: "success",
-            success: true,
+            statusCode: 200,
         });
-    } catch (error: any) {
-        next({
-            message: error?.message || "something went wrong",
-            status: "error",
-            success: false,
-            data: null,
-            statusCode: error?.statusCode || 500,
-        });
-    }
-};
+    },
+);
 
 //! create
-export const createCategories = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-) => {
-    try {
+export const createCategories = catchAsync(
+    async (req: Request, res: Response) => {
         //* create category
         const { name, description } = req.body;
         //*db query
         const category = await Category.create({ name, description });
 
-        if (!name) {
-            const error: any = new Error("name is required");
-            error.statusCode = 400;
-            error.status = false;
-            throw error;
-        }
+        if (!name) throw new AppError("name is required", 400);
 
         //* success response
-        res.status(200).json({
+        sendResponse(res, {
             message: "category is created successfully",
             data: category,
-            success: true,
-            status: "success",
+            statusCode: 201,
         });
-    } catch (error: any) {
-        next({
-            message: error?.message || "something went wrong",
-            status: "error",
-            success: false,
-            data: null,
-            statusCode: error?.statusCode || 500,
-        });
-    }
-};
+    },
+);
 
 //! update by id
-export const updateCategories = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-) => {
-    try {
+export const updateCategories = catchAsync(
+    async (req: Request, res: Response) => {
         //* get id and body
         const { id } = req.params;
         const { name, description } = req.body;
         //*db query
         const category = await Category.findOne({ _id: id });
 
-        if (!category) {
-            const error: any = new Error("category not found");
-            error.statusCode = 404;
-            error.status = false;
-            throw error;
-        }
+        if (!category) throw new AppError("category not found", 404);
 
         //* update category
         if (name) {
@@ -139,50 +82,24 @@ export const updateCategories = async (
         await category.save();
 
         //* success response
-        res.status(200).json({
+        sendResponse(res, {
             message: "category is updated successfully",
             data: category,
-            success: true,
-            status: "success",
+            statusCode: 200,
         });
-    } catch (error: any) {
-        next({
-            message: error?.message || "something went wrong",
-            status: "error",
-            success: false,
-            data: null,
-            statusCode: error?.statusCode || 500,
-        });
-    }
-};
+    },
+);
 
-//! delete
-export const deleteCategories = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-) => {
-    try {
+//! remove category
+export const removeCategories = catchAsync(
+    async (req: Request, res: Response) => {
         const { id } = req.params;
         const category = Category.findByIdAndDelete(id);
-        if (!category) {
-            const error: any = new Error("Category not found");
-            error.statusCode = 404;
-            error.status = false;
-            throw error;
-        }
-        res.status(200).json({
+        if (!category) throw new AppError("Category not found", 404);
+        sendResponse(res, {
             message: "User deleted successfully",
-            success: true,
-            status: "success",
-        });
-    } catch (error: any) {
-        next({
-            message: error?.message || "something went wrong",
-            status: "error",
-            success: false,
             data: null,
-            statusCode: error?.statusCode || 500,
+            statusCode: 200,
         });
-    }
-};
+    },
+);

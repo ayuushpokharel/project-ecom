@@ -1,9 +1,9 @@
 import express from "express";
 import {
     createCategories,
-    deleteCategories,
     getCategories,
     getCategoriesById,
+    removeCategories,
     updateCategories,
 } from "../controllers/category.controller";
 
@@ -22,6 +22,6 @@ router.post("/", createCategories);
 router.put("/:id", updateCategories);
 
 //! delete
-router.delete("/:id", deleteCategories);
+router.delete("/:id", removeCategories);
 
 export default router;
