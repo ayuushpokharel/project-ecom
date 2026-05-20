@@ -2,6 +2,8 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 
+const file_size = 10 * 1024 * 1024;
+
 //!
 export const multerUpload = () => {
     //* upload folder
@@ -23,7 +25,15 @@ export const multerUpload = () => {
         },
     });
 
+    // file filter
+
     //* upload the folder
-    const upload = multer({ storage: storage });
+    const upload = multer({
+        storage: storage,
+        limits: {
+            fileSize: file_size,
+        },
+    });
+
     return upload;
 };
