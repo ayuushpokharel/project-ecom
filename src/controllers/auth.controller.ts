@@ -133,6 +133,66 @@ export const updateProfile = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
-// todo: get profile
+//! get profile
+export const getProfile = catchAsync(async (req: Request, res: Response) => {
+    //* get id from params
+    const { id } = req.params;
 
-// todo: change password
+    //* db query
+    const user = await User.findById(id);
+    if (!user) {
+        throw new AppError("User not found", 404);
+    }
+
+    //* success response
+    sendResponse(res, {
+        message: "Profile fetched",
+        data: user,
+        statusCode: 200,
+    });
+});
+
+//! change password
+export const changePassword = catchAsync(
+    async (req: Request, res: Response) => {
+        //* get id
+        const { id } = req.params;
+
+        //* get old and new password
+        const { old_password, new_password } = req.body;
+
+        //* validate fields
+        if (!old_password) {
+            throw new AppError("Old password is required", 400);
+        }
+        if (!new_password) {
+            throw new AppError("New password is required", 400);
+        }
+
+        //* db query
+        const user = await User.findById(id);
+        if (!user) {
+            throw new AppError("User not found", 404);
+        }
+
+        //! compare old password
+        const isMatch = await comparePassword(old_password, user.password);
+        if (!isMatch) {
+            throw new AppError("Old password is incorrect", 401);
+        }
+
+        //* hash new password
+        const hash = await hashPassword(new_password);
+        user.password = hash;
+
+        //* save user
+        await user.save();
+
+        //* success response
+        sendResponse(res, {
+            message: "Password changed successfully",
+            data: null,
+            statusCode: 200,
+        });
+    },
+);
