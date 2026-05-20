@@ -101,11 +101,38 @@ export const login = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
-//! update profile
-// const userId = (req as any).user?.id;
-// const { full_name, phone } = req.body;
-// const update = catchAsync()
+export const updateProfile = catchAsync(async (req: Request, res: Response) => {
+    //* get id and body
+    const id = req.params;
+    const { full_name, phone } = req.body;
 
-//! get profile
+    //* db query
+    const user = await User.findById({ _id: id });
+    if (!user) {
+        throw new AppError("User not found", 404);
+    }
 
-//! change password
+    //* update user
+    if (full_name) user.full_name = full_name;
+    if (phone) user.phone = phone;
+    if (req.file) {
+        user.profile_image = {
+            path: req.file.path,
+            public_id: req.file.filename,
+        };
+    }
+
+    //* save user
+    await user.save();
+
+    //* success response
+    sendResponse(res, {
+        message: "Profile updated",
+        data: user,
+        statusCode: 200,
+    });
+});
+
+// todo: get profile
+
+// todo: change password
