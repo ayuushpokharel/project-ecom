@@ -6,8 +6,10 @@ import {
     removeCategories,
     updateCategories,
 } from "../controllers/category.controller";
+import { multerUpload } from "../middlewares/multer.middleware";
 
 const router = express();
+const upload = multerUpload();
 
 //! get all categories
 router.get("/", getCategories);
@@ -16,10 +18,10 @@ router.get("/", getCategories);
 router.get("/:id", getCategoriesById);
 
 //! create
-router.post("/", createCategories);
+router.post("/", upload.single("category_image"), createCategories);
 
 //! update
-router.put("/:id", updateCategories);
+router.put("/:id", upload.single("category_image"), updateCategories);
 
 //! remove category
 router.delete("/:id", removeCategories);

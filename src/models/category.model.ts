@@ -3,6 +3,10 @@ import mongoose from "mongoose";
 interface ICategorySchema extends Document {
     name: string;
     description?: string;
+    category_image: {
+        path: string;
+        public_id: string;
+    };
 }
 
 //! category schema =>  name:req , description: op
@@ -18,6 +22,18 @@ const categorySchema = new mongoose.Schema<ICategorySchema>(
             type: String,
             minLength: [3, "des. must be 3 char. long"],
             trim: true,
+        },
+        category_image: {
+            type: {
+                path: {
+                    type: String,
+                    required: true,
+                },
+                public_id: {
+                    type: String,
+                    required: true,
+                },
+            },
         },
     },
     { timestamps: true },
