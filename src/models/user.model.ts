@@ -30,6 +30,19 @@ const userSchema = new mongoose.Schema(
             default: Role.USER,
         },
         //! profile_image
+        //* [profile_image:{_id, path: , public_id:''}]
+        profile_image: {
+            type: {
+                path: {
+                    type: String,
+                    required: true,
+                },
+                public_id: {
+                    type: String,
+                    required: true,
+                },
+            },
+        },
     },
     { timestamps: true },
 );
