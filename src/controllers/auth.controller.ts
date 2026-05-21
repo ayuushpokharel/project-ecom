@@ -11,7 +11,7 @@ import { sendFileToCLoudinary } from "../utils/cloudinary.utils";
 export const register = catchAsync(async (req: Request, res: Response) => {
     const { full_name, email, password, phone } = req.body;
 
-    const image = req.file;
+    const image = req.file as Express.Multer.File;
 
     //* required field
     // if (!full_name) {
