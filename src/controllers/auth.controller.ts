@@ -5,6 +5,7 @@ import { sendResponse } from "../utils/sendResponse.utils";
 import { catchAsync } from "../utils/catchAsync.utils";
 import { comparePassword, hashPassword } from "../utils/bcrypt.utils";
 import { generateToken } from "../utils/jwt.utils";
+import { sendFileToCLoudinary } from "../utils/cloudinary.utils";
 
 //! register
 export const register = catchAsync(async (req: Request, res: Response) => {
@@ -37,6 +38,13 @@ export const register = catchAsync(async (req: Request, res: Response) => {
     user.password = hash;
 
     //! handle profile image
+    if (image) {
+        const { path, public_id } = await sendFileToCLoudinary(
+            image,
+            "/profile_image",
+        );
+        user.profile_image = { path, public_id };
+    }
 
     //* save user
     await user.save();
@@ -117,10 +125,11 @@ export const updateProfile = catchAsync(async (req: Request, res: Response) => {
     if (full_name) user.full_name = full_name;
     if (phone) user.phone = phone;
     if (req.file) {
-        user.profile_image = {
-            path: req.file.path,
-            public_id: req.file.filename,
-        };
+        const { path, public_id } = await sendFileToCLoudinary(
+            req.file,
+            "/profile_image",
+        );
+        user.profile_image = { path, public_id };
     }
 
     //* save user
