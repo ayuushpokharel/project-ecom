@@ -3,6 +3,7 @@ import Category from "../models/category.model";
 import { catchAsync } from "../utils/catchAsync.utils";
 import { sendResponse } from "../utils/sendResponse.utils";
 import AppError from "../utils/appError.utils";
+import { sendFileToCLoudinary } from "../utils/cloudinary.utils";
 
 //! get all categories
 export const getCategories = catchAsync(async (req: Request, res: Response) => {
@@ -44,10 +45,23 @@ export const createCategories = catchAsync(
     async (req: Request, res: Response) => {
         //* create category
         const { name, description } = req.body;
+
+        //* get category image
+        const image = req.file as Express.Multer.File;
+
         //*db query
         const category = await Category.create({ name, description });
 
         if (!name) throw new AppError("name is required", 400);
+
+        //* handle category image
+        if (image) {
+            const { path, public_id } = await sendFileToCLoudinary(
+                image,
+                "/category_image",
+            );
+            category.category_image = { path, public_id };
+        }
 
         //* success response
         sendResponse(res, {
@@ -64,6 +78,10 @@ export const updateCategories = catchAsync(
         //* get id and body
         const { id } = req.params;
         const { name, description } = req.body;
+
+        //* get category image
+        const image = req.file as Express.Multer.File;
+
         //*db query
         const category = await Category.findOne({ _id: id });
 
@@ -76,6 +94,15 @@ export const updateCategories = catchAsync(
 
         if (description) {
             category.description = description;
+        }
+
+        //* update category image
+        if (image) {
+            const { path, public_id } = await sendFileToCLoudinary(
+                image,
+                "/category_image",
+            );
+            category.category_image = { path, public_id };
         }
 
         //* save category

@@ -3,6 +3,7 @@ import { catchAsync } from "../utils/catchAsync.utils";
 import Brand from "../models/brand.model";
 import { sendResponse } from "../utils/sendResponse.utils";
 import AppError from "../utils/appError.utils";
+import { sendFileToCLoudinary } from "../utils/cloudinary.utils";
 
 //! get all brands
 export const getBrands = catchAsync(
@@ -48,11 +49,24 @@ export const createBrand = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
         //* create brand
         const { name } = req.body;
+
+        //* get brand logo
+        const image = req.file as Express.Multer.File;
+
         //* db query
         const brand = await Brand.create({ name });
 
         if (!name) {
             throw new AppError("name is required", 400);
+        }
+
+        //* handle logo image
+        if (image) {
+            const { path, public_id } = await sendFileToCLoudinary(
+                image,
+                "/brand_logo",
+            );
+            brand.brand_logo = { path, public_id };
         }
 
         //* success response

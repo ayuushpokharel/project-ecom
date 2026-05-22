@@ -9,7 +9,7 @@ const brandSchema = new mongoose.Schema(
             minLength: [3, "name must be 3 char. long"],
             trim: true,
         },
-        logo: {
+        brand_logo: {
             type: {
                 path: {
                     type: String,
