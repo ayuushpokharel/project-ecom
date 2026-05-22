@@ -7,6 +7,9 @@ import { comparePassword, hashPassword } from "../utils/bcrypt.utils";
 import { generateToken } from "../utils/jwt.utils";
 import { sendFileToCLoudinary } from "../utils/cloudinary.utils";
 
+//! folder
+const folder = "/profile_image";
+
 //! register
 export const register = catchAsync(async (req: Request, res: Response) => {
     const { full_name, email, password, phone } = req.body;
@@ -39,10 +42,7 @@ export const register = catchAsync(async (req: Request, res: Response) => {
 
     //! handle profile image
     if (image) {
-        const { path, public_id } = await sendFileToCLoudinary(
-            image,
-            "/profile_image",
-        );
+        const { path, public_id } = await sendFileToCLoudinary(image, folder);
         user.profile_image = { path, public_id };
     }
 
@@ -110,6 +110,44 @@ export const login = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+//! update profile
+
+//? update profile picture only
+export const updateProfilePicture = catchAsync(
+    async (req: Request, res: Response) => {
+        //* get id and file
+        const { id } = req.params;
+        const image = req.file as Express.Multer.File;
+
+        //* db query -> find user
+        const user = await User.findOne({ _id: id });
+
+        if (!user) {
+            throw new AppError("User not found", 404);
+        }
+
+        //* upload image to cloudinary
+        const { path, public_id } = await sendFileToCLoudinary(image, folder);
+
+        //* assign new image to user
+        user.profile_image = {
+            path,
+            public_id,
+        };
+
+        //* save user
+        await user.save();
+
+        //* success response
+        sendResponse(res, {
+            message: "Profile picture updated",
+            data: user,
+            statusCode: 200,
+        });
+    },
+);
+
+//? update whole profile details
 export const updateProfile = catchAsync(async (req: Request, res: Response) => {
     //* get id and body
     const id = req.params;
@@ -127,7 +165,7 @@ export const updateProfile = catchAsync(async (req: Request, res: Response) => {
     if (req.file) {
         const { path, public_id } = await sendFileToCLoudinary(
             req.file,
-            "/profile_image",
+            folder,
         );
         user.profile_image = { path, public_id };
     }
