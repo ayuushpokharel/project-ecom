@@ -3,7 +3,10 @@ import Category from "../models/category.model";
 import { catchAsync } from "../utils/catchAsync.utils";
 import { sendResponse } from "../utils/sendResponse.utils";
 import AppError from "../utils/appError.utils";
-import { sendFileToCLoudinary } from "../utils/cloudinary.utils";
+import {
+    deleteFileFromCloudinary,
+    sendFileToCLoudinary,
+} from "../utils/cloudinary.utils";
 
 //! get all categories
 export const getCategories = catchAsync(async (req: Request, res: Response) => {
@@ -94,6 +97,15 @@ export const updateCategories = catchAsync(
 
         if (description) {
             category.description = description;
+        }
+
+        //* delete old image from cloudinary if exists
+        if (image) {
+            if (category?.category_image?.public_id) {
+                await deleteFileFromCloudinary(
+                    category.category_image.public_id,
+                );
+            }
         }
 
         //* update category image

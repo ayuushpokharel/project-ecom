@@ -130,7 +130,7 @@ export const updateProfilePicture = catchAsync(
         }
 
         //* delete old image from cloudinary if exists
-        if (user.profile_image?.public_id) {
+        if (user?.profile_image?.public_id) {
             await deleteFileFromCloudinary(user.profile_image.public_id);
         }
 
@@ -174,7 +174,7 @@ export const updateProfile = catchAsync(async (req: Request, res: Response) => {
     //* update image
     if (req.file) {
         // delete old first
-        if (user.profile_image?.public_id) {
+        if (user?.profile_image?.public_id) {
             await deleteFileFromCloudinary(user.profile_image.public_id);
         }
         const { path, public_id } = await sendFileToCLoudinary(

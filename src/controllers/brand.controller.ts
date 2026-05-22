@@ -3,7 +3,10 @@ import { catchAsync } from "../utils/catchAsync.utils";
 import Brand from "../models/brand.model";
 import { sendResponse } from "../utils/sendResponse.utils";
 import AppError from "../utils/appError.utils";
-import { sendFileToCLoudinary } from "../utils/cloudinary.utils";
+import {
+    deleteFileFromCloudinary,
+    sendFileToCLoudinary,
+} from "../utils/cloudinary.utils";
 
 //! get all brands
 export const getBrands = catchAsync(
@@ -85,6 +88,9 @@ export const updateBrand = catchAsync(
         const { id } = req.params;
         //* get name
         const { name } = req.body;
+        //* get brand logo
+        const image = req.file as Express.Multer.File;
+
         //* db query
         const brand = await Brand.findOne({ _id: id });
 
@@ -95,6 +101,19 @@ export const updateBrand = catchAsync(
         //* update brand
         if (name) {
             brand.name = name;
+        }
+
+        //* update logo image
+        if (image) {
+            // delete old first if exists
+            if (brand?.brand_logo?.public_id) {
+                await deleteFileFromCloudinary(brand.brand_logo.public_id);
+            }
+            const { path, public_id } = await sendFileToCLoudinary(
+                image,
+                "/brand_logo",
+            );
+            brand.brand_logo = { path, public_id };
         }
 
         //* save brand
