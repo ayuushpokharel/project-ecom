@@ -5,7 +5,10 @@ import { sendResponse } from "../utils/sendResponse.utils";
 import { catchAsync } from "../utils/catchAsync.utils";
 import { comparePassword, hashPassword } from "../utils/bcrypt.utils";
 import { generateToken } from "../utils/jwt.utils";
-import { sendFileToCLoudinary } from "../utils/cloudinary.utils";
+import {
+    deleteFileFromCloudinary,
+    sendFileToCLoudinary,
+} from "../utils/cloudinary.utils";
 
 //! folder
 const folder = "/profile_image";
@@ -126,6 +129,11 @@ export const updateProfilePicture = catchAsync(
             throw new AppError("User not found", 404);
         }
 
+        //* delete old image from cloudinary if exists
+        if (user.profile_image?.public_id) {
+            await deleteFileFromCloudinary(user.profile_image.public_id);
+        }
+
         //* upload image to cloudinary
         const { path, public_id } = await sendFileToCLoudinary(image, folder);
 
@@ -150,7 +158,7 @@ export const updateProfilePicture = catchAsync(
 //? update whole profile details
 export const updateProfile = catchAsync(async (req: Request, res: Response) => {
     //* get id and body
-    const id = req.params;
+    const { id } = req.params;
     const { full_name, phone } = req.body;
 
     //* db query
@@ -162,7 +170,13 @@ export const updateProfile = catchAsync(async (req: Request, res: Response) => {
     //* update user
     if (full_name) user.full_name = full_name;
     if (phone) user.phone = phone;
+
+    //* update image
     if (req.file) {
+        // delete old first
+        if (user.profile_image?.public_id) {
+            await deleteFileFromCloudinary(user.profile_image.public_id);
+        }
         const { path, public_id } = await sendFileToCLoudinary(
             req.file,
             folder,
