@@ -8,6 +8,8 @@ import {
     sendFileToCLoudinary,
 } from "../utils/cloudinary.utils";
 
+const folder = "/category_image";
+
 //! get all categories
 export const getCategories = catchAsync(async (req: Request, res: Response) => {
     const filter = {};
@@ -61,7 +63,7 @@ export const createCategories = catchAsync(
         if (image) {
             const { path, public_id } = await sendFileToCLoudinary(
                 image,
-                "/category_image",
+                folder,
             );
             category.category_image = { path, public_id };
         }
@@ -112,7 +114,7 @@ export const updateCategories = catchAsync(
         if (image) {
             const { path, public_id } = await sendFileToCLoudinary(
                 image,
-                "/category_image",
+                folder,
             );
             category.category_image = { path, public_id };
         }
@@ -133,10 +135,12 @@ export const updateCategories = catchAsync(
 export const removeCategories = catchAsync(
     async (req: Request, res: Response) => {
         const { id } = req.params;
-        const category = Category.findByIdAndDelete(id);
+        const category = await Category.findOne({ _id: id });
         if (!category) throw new AppError("Category not found", 404);
+        await deleteFileFromCloudinary(category.category_image.public_id);
+        await category.deleteOne({ _id: id });
         sendResponse(res, {
-            message: "User deleted successfully",
+            message: "Category deleted successfully",
             data: null,
             statusCode: 200,
         });

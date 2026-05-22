@@ -8,6 +8,8 @@ import {
     sendFileToCLoudinary,
 } from "../utils/cloudinary.utils";
 
+const folder = "/brand_logo";
+
 //! get all brands
 export const getBrands = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -67,7 +69,7 @@ export const createBrand = catchAsync(
         if (image) {
             const { path, public_id } = await sendFileToCLoudinary(
                 image,
-                "/brand_logo",
+                folder,
             );
             brand.brand_logo = { path, public_id };
         }
@@ -111,7 +113,7 @@ export const updateBrand = catchAsync(
             }
             const { path, public_id } = await sendFileToCLoudinary(
                 image,
-                "/brand_logo",
+                folder,
             );
             brand.brand_logo = { path, public_id };
         }
@@ -133,19 +135,25 @@ export const deleteBrand = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
         //* get brand
         const { id } = req.params;
-
-        //* db query
-        const brand = Brand.findByIdAndDelete(id);
+        const brand = await Brand.findOne({ _id: id });
 
         //* brand not found
         if (!brand) {
             throw new AppError("brand not found", 404);
         }
 
+        //* delete logo from cloud
+        if (brand.brand_logo?.public_id) {
+            await deleteFileFromCloudinary(brand.brand_logo.public_id);
+        }
+
+        //* delete brand
+        await brand.deleteOne({ _id: id });
+
         //* success response
         sendResponse(res, {
             message: "brand deleted successfully",
             statusCode: 200,
         });
-    },
+    }
 );
