@@ -1,6 +1,15 @@
 import express from "express";
-import { register, login, getProfile, changePassword, updateProfile, updateProfilePicture } from "../controllers/auth.controller";
+import {
+    register,
+    login,
+    getProfile,
+    changePassword,
+    updateProfile,
+    updateProfilePicture,
+} from "../controllers/auth.controller";
 import { multerUpload } from "../middlewares/multer.middleware";
+import { authenticate } from "../middlewares/auth.middleware";
+import { Role } from "../types/enum.types";
 
 const router = express.Router();
 const upload = multerUpload();
@@ -13,16 +22,34 @@ router.post("/register", upload.single("profile_image"), register);
 router.post("/login", login);
 
 //! update profile picture only
-router.put("/profile-picture/:id", upload.single("profile_image"), updateProfilePicture);
+router.put(
+    "/profile-picture/:id",
+    upload.single("profile_image"),
+    authenticate([Role.USER, Role.ADMIN, Role.SUPER_ADMIN]),
+    updateProfilePicture,
+);
 
 //! update whole profile
-router.put("/profile/:id", upload.single("profile_image"), updateProfile);
+router.put(
+    "/profile/:id",
+    upload.single("profile_image"),
+    authenticate([Role.USER, Role.ADMIN, Role.SUPER_ADMIN]),
+    updateProfile,
+);
 
 //! get profile
-router.get("/profile/:id", getProfile);
- 
+router.get(
+    "/profile/:id",
+    authenticate([Role.USER, Role.ADMIN, Role.SUPER_ADMIN]),
+    getProfile,
+);
+
 //! change password
-router.put("/change-password/:id", changePassword);
+router.put(
+    "/change-password/:id",
+    authenticate([Role.USER, Role.ADMIN, Role.SUPER_ADMIN]),
+    changePassword,
+);
 
 //! export
 export default router;

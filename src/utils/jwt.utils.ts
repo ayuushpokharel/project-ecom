@@ -9,13 +9,24 @@ type TPayLoad = {
     role: Role;
     email: string;
 };
-//!
+
+//! generate token
 export const generateToken = (payLoad: TPayLoad) => {
     try {
         const access_token = jwt.sign(payLoad, ENV_CONFIG.jwt_secret, {
             expiresIn: ENV_CONFIG.jwt_expiry as any,
         });
         return access_token;
+    } catch (error: any) {
+        console.log(error);
+        throw error;
+    }
+};
+
+//! verify token
+export const verifyToken = (token: string) => {
+    try {
+        return jwt.verify(token, ENV_CONFIG.jwt_secret);
     } catch (error: any) {
         console.log(error);
         throw error;

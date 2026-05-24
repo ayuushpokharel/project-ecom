@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import { errorHandler } from "./middlewares/errorHandler.middleware";
+import cookieParser from "cookie-parser";
 
 //! importing routes
 import routes from "./routes";
@@ -8,10 +9,13 @@ import AppError from "./utils/appError.utils";
 //! creating express app instance
 const app = express();
 
+//! using middlewares
+
+//! using cookie parser
+app.use(cookieParser());
+
 //! body parser
 app.use(express.json({ limit: "10mb" }));
-
-//! using middlewares
 
 //! health route
 app.get("/", (req: Request, res: Response) => {
