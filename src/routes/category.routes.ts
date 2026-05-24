@@ -10,7 +10,7 @@ import { multerUpload } from "../middlewares/multer.middleware";
 import { authenticate } from "../middlewares/auth.middleware";
 import { Role } from "../types/enum.types";
 
-const router = express();
+const router = express.Router();
 const upload = multerUpload();
 
 //! get all categories
