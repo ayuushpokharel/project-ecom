@@ -9,6 +9,7 @@ import {
     deleteFileFromCloudinary,
     sendFileToCLoudinary,
 } from "../utils/cloudinary.utils";
+import ENV_CONFIG from "../config/env.config";
 
 //! folder
 const folder = "/profile_image";
@@ -101,6 +102,14 @@ export const login = catchAsync(async (req: Request, res: Response) => {
     };
     const access_token = generateToken(payLoad);
     // console.log(access_token);
+
+    //* send access token in cookie
+    res.cookie("access_token", access_token, {
+        httpOnly: ENV_CONFIG.node_env === "development" ? false : true,
+        maxAge: Number(ENV_CONFIG.cookie_expiry) * 24 * 60 * 60 * 1000,
+        secure: ENV_CONFIG.node_env === "development" ? false : true,
+        sameSite: ENV_CONFIG.node_env === "development" ? "lax" : "none",
+    });
 
     //! success response
     sendResponse(res, {
