@@ -118,7 +118,7 @@ export const login = catchAsync(async (req: Request, res: Response) => {
             user,
             access_token,
         },
-        statusCode: 201,
+        statusCode: 200,
     });
 });
 
