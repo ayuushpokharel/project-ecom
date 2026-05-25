@@ -8,7 +8,7 @@ import {
 } from "../controllers/brand.controller";
 import { multerUpload } from "../middlewares/multer.middleware";
 import { authenticate } from "../middlewares/auth.middleware";
-import { Role } from "../types/enum.types";
+import { Only_Admins, Role } from "../types/enum.types";
 
 const router = express.Router();
 const upload = multerUpload();
@@ -23,7 +23,7 @@ router.get("/:id", getBrandById);
 router.post(
     "/",
     upload.single("brand_logo"),
-    authenticate([Role.ADMIN, Role.SUPER_ADMIN]),
+    authenticate(Only_Admins),
     createBrand,
 );
 
@@ -31,15 +31,11 @@ router.post(
 router.put(
     "/:id",
     upload.single("brand_logo"),
-    authenticate([Role.ADMIN, Role.SUPER_ADMIN]),
+    authenticate(Only_Admins),
     updateBrand,
 );
 
-//! delete brand
-router.delete(
-    "/:id",
-    authenticate([Role.ADMIN, Role.SUPER_ADMIN]),
-    deleteBrand,
-);
+//! remove brand
+router.delete("/:id", authenticate(Only_Admins), deleteBrand);
 
 export default router;

@@ -8,7 +8,7 @@ import {
 } from "../controllers/category.controller";
 import { multerUpload } from "../middlewares/multer.middleware";
 import { authenticate } from "../middlewares/auth.middleware";
-import { Role } from "../types/enum.types";
+import { Only_Admins } from "../types/enum.types";
 
 const router = express.Router();
 const upload = multerUpload();
@@ -23,7 +23,7 @@ router.get("/:id", getCategoriesById);
 router.post(
     "/",
     upload.single("category_image"),
-    authenticate([Role.ADMIN, Role.SUPER_ADMIN]),
+    authenticate(Only_Admins),
     createCategories,
 );
 
@@ -31,11 +31,11 @@ router.post(
 router.put(
     "/:id",
     upload.single("category_image"),
-    authenticate([Role.ADMIN, Role.SUPER_ADMIN]),
+    authenticate(Only_Admins),
     updateCategories,
 );
 
 //! remove category
-router.delete("/:id", authenticate([Role.ADMIN, Role.SUPER_ADMIN]), removeCategories);
+router.delete("/:id", authenticate(Only_Admins), removeCategories);
 
 export default router;
