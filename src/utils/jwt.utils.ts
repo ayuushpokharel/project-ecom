@@ -10,6 +10,8 @@ type TPayLoad = {
     email: string;
 };
 
+export type TJwtReturn = { iat: number; exp: number } & TPayLoad;
+
 //! generate token
 export const generateToken = (payLoad: TPayLoad) => {
     try {
@@ -24,9 +26,9 @@ export const generateToken = (payLoad: TPayLoad) => {
 };
 
 //! verify token
-export const verifyToken = (token: string) => {
+export const verifyToken = (token: string): TJwtReturn => {
     try {
-        return jwt.verify(token, ENV_CONFIG.jwt_secret);
+        return jwt.verify(token, ENV_CONFIG.jwt_secret) as TJwtReturn;
     } catch (error: any) {
         console.log(error);
         throw error;

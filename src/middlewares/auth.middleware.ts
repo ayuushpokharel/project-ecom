@@ -15,7 +15,7 @@ export const authenticate = (roles?: Role[]) => {
             }
 
             //* verify token
-            const decoded_data: any = verifyToken(access_token);
+            const decoded_data = verifyToken(access_token);
 
             //* check if token is expired or not
 
@@ -36,6 +36,14 @@ export const authenticate = (roles?: Role[]) => {
             if (roles && !roles.includes(decoded_data.role)) {
                 throw new AppError("Forbidden: Access Denied", 403);
             }
+
+            //! add logged in user data to req object
+            req.user = {
+                _id: decoded_data._id,
+                email: decoded_data.email,
+                role: decoded_data.role,
+            };
+
             next();
         } catch (error) {
             next(error);
