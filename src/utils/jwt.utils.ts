@@ -3,7 +3,7 @@ import { Role } from "../types/enum.types";
 import mongoose from "mongoose";
 import ENV_CONFIG from "../config/env.config";
 
-type TPayLoad = {
+export type TPayLoad = {
     _id: mongoose.Types.ObjectId;
     full_name?: string;
     role: Role;
