@@ -128,7 +128,8 @@ export const login = catchAsync(async (req: Request, res: Response) => {
 export const updateProfilePicture = catchAsync(
     async (req: Request, res: Response) => {
         //* get id and file
-        const { id } = req.params;
+        // const { id } = req.params;
+        const id = req.user?._id;
         const image = req.file as Express.Multer.File;
 
         //* db query -> find user
@@ -167,7 +168,7 @@ export const updateProfilePicture = catchAsync(
 //? update whole profile details
 export const updateProfile = catchAsync(async (req: Request, res: Response) => {
     //* get id and body
-    const { id } = req.params;
+    const id = req.user?._id;
     const { full_name, phone } = req.body;
 
     //* db query
@@ -207,8 +208,7 @@ export const updateProfile = catchAsync(async (req: Request, res: Response) => {
 //! get profile
 export const getProfile = catchAsync(async (req: Request, res: Response) => {
     //* get id from params
-    const { id } = req.params;
-
+    const id = req.user?._id;
     //* db query
     const user = await User.findById(id);
     if (!user) {
@@ -227,7 +227,7 @@ export const getProfile = catchAsync(async (req: Request, res: Response) => {
 export const changePassword = catchAsync(
     async (req: Request, res: Response) => {
         //* get id
-        const { id } = req.params;
+        const id = req.user?._id;
 
         //* get old and new password
         const { old_password, new_password } = req.body;
