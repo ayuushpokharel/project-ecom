@@ -9,7 +9,7 @@ import {
 } from "../controllers/auth.controller";
 import { multerUpload } from "../middlewares/multer.middleware";
 import { authenticate } from "../middlewares/auth.middleware";
-import { Only_Admins, Role } from "../types/enum.types";
+import { Only_Users } from "../types/enum.types";
 
 const router = express.Router();
 const upload = multerUpload();
@@ -25,27 +25,23 @@ router.post("/login", login);
 router.put(
     "/profile-picture/:id",
     upload.single("profile_image"),
-    authenticate(Only_Admins),
+    authenticate(Only_Users),
     updateProfilePicture,
 );
 
 //! update whole profile
 router.put(
-    "/profile/:id",
+    "/profile",
     upload.single("profile_image"),
-    authenticate(Only_Admins),
+    authenticate(Only_Users),
     updateProfile,
 );
 
 //! get profile
-router.get("/profile/:id", authenticate(Only_Admins), getProfile);
+router.get("/profile", authenticate(Only_Users), getProfile);
 
 //! change password
-router.put(
-    "/change-password/:id",
-    authenticate([Role.USER, Role.ADMIN, Role.SUPER_ADMIN]),
-    changePassword,
-);
+router.put("/change-password", authenticate(Only_Users), changePassword);
 
 //! export
 export default router;
