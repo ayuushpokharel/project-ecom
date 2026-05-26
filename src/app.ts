@@ -11,19 +11,19 @@ const app = express();
 
 //! using middlewares
 
-//! using cookie parser
+//* using cookie parser
 app.use(cookieParser());
 
-//! body parser
+//* body parser
 app.use(express.json({ limit: "10mb" }));
 
 //! health route
 app.get("/", (req: Request, res: Response) => {
-    res.status(200).json({
-        message: "Server is up and running",
-        success: true,
-        status: "success",
-    });
+  res.status(200).json({
+    message: "Server is up and running",
+    success: true,
+    status: "success",
+  });
 });
 
 //! using routes
@@ -31,8 +31,8 @@ app.use("/api/v1", routes);
 
 //! path not found error
 app.use((req: Request, res: Response) => {
-    const message = `cannot ${req.method} on ${req.url}`;
-    throw new AppError(message, 404);
+  const message = `cannot ${req.method} on ${req.url}`;
+  throw new AppError(message, 404);
 });
 
 //! error handler
