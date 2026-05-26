@@ -12,3 +12,5 @@ const transporter = nodemailer.createTransport({
     pass: ENV_CONFIG.smtp_pass,
   },
 });
+
+export default transporter;
