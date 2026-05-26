@@ -1,9 +1,9 @@
-import TPayLoad from "../utils/jwt.utils";
+import { TPayLoad } from "../utils/jwt.utils";
 
 declare global {
   namespace Express {
     interface Request {
-      user?: TPayLoad;
+      user: TPayLoad;
       file?: Multer.File;
       files?: Multer.File[];
     }
