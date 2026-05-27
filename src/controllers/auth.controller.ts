@@ -11,6 +11,10 @@ import {
 } from "../utils/cloudinary.utils";
 import ENV_CONFIG from "../config/env.config";
 import sendEmail from "../utils/sendEmail.utils";
+import {
+  getLoginSuccessEmailHtml,
+  getRegistrationEmailHtml,
+} from "../utils/email.utils";
 
 //! folder
 const folder = "/profile_image";
@@ -53,6 +57,24 @@ export const register = catchAsync(async (req: Request, res: Response) => {
 
   //* save user
   await user.save();
+
+  //* send mail to user
+  await sendEmail({
+    to: user.email,
+    subject: "Welcome to Project Ecommerce",
+    text: `Hello ${user.full_name}, welcome to Project Ecommerce!`,
+    html: getRegistrationEmailHtml({
+      name: user.full_name,
+      email: user.email,
+      registeredAt: new Date().toLocaleString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+    }),
+  });
 
   //* success response
   // res.status(201).json({
@@ -104,7 +126,22 @@ export const login = catchAsync(async (req: Request, res: Response) => {
   const access_token = generateToken(payLoad);
   // console.log(access_token);
 
-  await sendEmail();
+  await sendEmail({
+    to: user.email,
+    subject: "Welcome to Project Ecommerce",
+    text: `Hello ${user.full_name}, welcome to Project Ecommerce!`,
+    html: getLoginSuccessEmailHtml({
+      name: user.full_name,
+      dateTime: new Date().toLocaleString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      location: "Kathmandu, NP",
+    }),
+  });
 
   //* send access token in cookie
   res.cookie("access_token", access_token, {
