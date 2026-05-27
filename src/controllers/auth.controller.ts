@@ -13,7 +13,7 @@ import ENV_CONFIG from "../config/env.config";
 import sendEmail from "../utils/sendEmail.utils";
 
 //! folder
-const folder = "/profile_image";
+const folder = CLOUDINARY_FOLDERS.profile_image;
 
 //! register
 export const register = catchAsync(async (req: Request, res: Response) => {

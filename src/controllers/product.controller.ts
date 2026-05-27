@@ -50,7 +50,7 @@ export const getProductById = catchAsync(
 //! create product
 export const createProduct = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    //* create product
+    //* get body
     const {
       name,
       description,
@@ -62,12 +62,36 @@ export const createProduct = catchAsync(
       featured,
     } = req.body;
 
-    //* get images from req.file
-    const cover_image = req.file as Express.Multer.File;
-    const images = req.file as Express.Multer.File;
+    //* validate required fields
+    if (!name) throw new AppError("name is required", 400);
+    if (!description) throw new AppError("description is required", 400);
+    if (!price) throw new AppError("price is required", 400);
+    if (!stock) throw new AppError("stock is required", 400);
+    if (!category) throw new AppError("category is required", 400);
+    if (!brand) throw new AppError("brand is required", 400);
 
-    //* db query
-    const product = await Product.create({
+    //* get files from req.files
+    const files = req.files as {
+      [fieldname: string]: Express.Multer.File[];
+    };
+    const cover_image_file = files?.["cover_image"]?.[0];
+    const image_files = files?.["images"] ?? [];
+
+    //* validate cover image
+    if (!cover_image_file) {
+      throw new AppError("cover image is required", 400);
+    }
+
+    //* upload cover image to cloudinary
+    const cover_image = await sendFileToCLoudinary(cover_image_file, folder);
+
+    //* upload multiple images to cloudinary
+    const images = await Promise.all(
+      image_files.map((file) => sendFileToCLoudinary(file, folder1)),
+    );
+
+    //* create product
+    const product = new Product({
       name,
       description,
       price,
@@ -76,51 +100,12 @@ export const createProduct = catchAsync(
       brand,
       new_arrival,
       featured,
+      cover_image,
+      images,
     });
 
-    //* required
-    if (!name) {
-      throw new AppError("name is required", 400);
-    }
-    if (!description) {
-      throw new AppError("description is required", 400);
-    }
-    if (!price) {
-      throw new AppError("price is required", 400);
-    }
-    if (!stock) {
-      throw new AppError("stock number is required", 400);
-    }
-    if (!category) {
-      throw new AppError("category is required", 400);
-    }
-    if (!brand) {
-      throw new AppError("brand is required", 400);
-    }
-    if (!new_arrival) {
-      throw new AppError("new_arrival info. is required", 400);
-    }
-    if (!featured) {
-      throw new AppError("featured info. is required", 400);
-    }
-    if (!cover_image) {
-      throw new AppError("cover_image is required", 400);
-    }
-
-    //* handle cover image
-    if (cover_image) {
-      const { path, public_id } = await sendFileToCLoudinary(
-        cover_image,
-        folder,
-      );
-      product.cover_image = { path, public_id };
-    }
-
-    //* handle images
-    if (images) {
-      const { path, public_id } = await sendFileToCLoudinary(images, folder1);
-      product.images.push({ type: { path, public_id } });
-    }
+    //* save product
+    await product.save();
 
     //* success response
     sendResponse(res, {
@@ -130,6 +115,7 @@ export const createProduct = catchAsync(
     });
   },
 );
+
 //! update product
 //* update product
 //     if (name) product.name = name;

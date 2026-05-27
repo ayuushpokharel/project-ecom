@@ -20,8 +20,10 @@ router.get("/:id", getProductById);
 //! create
 router.post(
   "/",
-  upload.single("cover_image"),
-  upload.array("images", 10),
+  upload.fields([
+    { name: "cover_image", maxCount: 1 },
+    { name: "images", maxCount: 10 },
+  ]),
   authenticate(Only_Admins),
   createProduct,
 );
