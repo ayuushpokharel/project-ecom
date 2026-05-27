@@ -13,7 +13,7 @@ import ENV_CONFIG from "../config/env.config";
 import sendEmail from "../utils/sendEmail.utils";
 import {
   getLoginSuccessEmailHtml,
-  getRegistrationEmailHtml,
+  getRegistrationSuccessEmailHtml,
 } from "../utils/email.utils";
 
 //! folder
@@ -63,16 +63,16 @@ export const register = catchAsync(async (req: Request, res: Response) => {
     to: user.email,
     subject: "Welcome to Project Ecommerce",
     text: `Hello ${user.full_name}, welcome to Project Ecommerce!`,
-    html: getRegistrationEmailHtml({
+    html: getRegistrationSuccessEmailHtml({
       name: user.full_name,
-      email: user.email,
-      registeredAt: new Date().toLocaleString("en-US", {
+      dateTime: new Date().toLocaleString("en-US", {
         year: "numeric",
         month: "short",
         day: "numeric",
         hour: "2-digit",
         minute: "2-digit",
       }),
+      location: "Kathmandu, NP",
     }),
   });
 
