@@ -35,15 +35,15 @@ router.post(
 // router.delete()
 
 //! get by category
-// router.get()
+router.get("/category/:categoryId", getProducts);
 
 //! get by brand
-// router.get()
+router.get("/brand/:brandId", getProducts);
 
 //! get new arrivals
-// router.get()
+router.get("/new-arrivals", getProducts);
 
 //! get all featured products
-// router.get()
+router.get("/featured", getProducts);
 
 export default router;
