@@ -4,6 +4,8 @@ import {
   createProduct,
   getProductById,
   getProducts,
+  removeProduct,
+  updateProduct,
 } from "../controllers/product.controller";
 import { authenticate } from "../middlewares/auth.middleware";
 import { Only_Admins } from "../types/enum.types";
@@ -29,10 +31,18 @@ router.post(
 );
 
 //! update product
-// router.put()
+router.put(
+  "/:id",
+  upload.fields([
+    { name: "cover_image", maxCount: 1 },
+    { name: "images", maxCount: 10 },
+  ]),
+  authenticate(Only_Admins),
+  updateProduct,
+);
 
 //! remove product
-// router.delete()
+router.delete("/:id", authenticate(Only_Admins), removeProduct);
 
 //! get by category
 router.get("/category/:categoryId", getProducts);

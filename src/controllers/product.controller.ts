@@ -76,8 +76,8 @@ export const createProduct = catchAsync(
     if (!description) throw new AppError("description is required", 400);
     if (!price) throw new AppError("price is required", 400);
     if (!stock) throw new AppError("stock is required", 400);
-    if (!category) throw new AppError("category is required", 400);
-    if (!brand) throw new AppError("brand is required", 400);
+    // if (!category) throw new AppError("category is required", 400);
+    // if (!brand) throw new AppError("brand is required", 400);
 
     //* validate cover image
     if (!cover_image[0]) {
@@ -131,17 +131,82 @@ export const createProduct = catchAsync(
 );
 
 //! update product
-//* update product
-//     if (name) product.name = name;
-//     if (description) product.description = description;
-//     if (price) product.price = price;
-//     if (stock) product.stock = stock;
-//     if (category) product.category = category;
-//     if (brand) product.brand = brand;
-//     if (new_arrival) product.new_arrival = new_arrival;
-//     if (featured) product.featured = featured;
+export const updateProduct = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    const product = await Product.findOne({ _id: id });
+    if (!product) {
+      throw new AppError("Product not found", 404);
+    }
+    const {
+      name,
+      description,
+      price,
+      stock,
+      category,
+      brand,
+      new_arrival,
+      featured,
+    } = req.body;
 
-// todo: remove product
+    //* get files from req.files
+    const { cover_image, images } = req.files as {
+      [fieldname: string]: Express.Multer.File[];
+    };
+
+    //* update product
+    if (name) product.name = name;
+    if (description) product.description = description;
+    if (price) product.price = price;
+    if (stock) product.stock = stock;
+    if (category) product.category = category;
+    if (brand) product.brand = brand;
+    if (new_arrival) product.new_arrival = new_arrival;
+    if (featured) product.featured = featured;
+
+    //* delete old cover image from cloudinary and upload new one
+    if (cover_image && cover_image[0]) {
+      if (product.cover_image?.public_id) {
+        await deleteFileFromCloudinary(product.cover_image.public_id);
+      }
+      const { path, public_id } = await sendFileToCLoudinary(
+        cover_image[0],
+        folder,
+      );
+      product.cover_image = {
+        path,
+        public_id,
+      };
+    }
+
+    //* delete old images from cloudinary and upload new ones
+    if (images && Array.isArray(images) && images.length > 0) {
+      if (product.images && product.images.length > 0) {
+        await Promise.all(
+          product.images.map((image: any) =>
+            deleteFileFromCloudinary(image.public_id),
+          ),
+        );
+      }
+      const files = await Promise.all(
+        images.map((file) => sendFileToCLoudinary(file, folder)),
+      );
+      product.images = files as any;
+    }
+
+    //* save updated product
+    await product.save();
+
+    //* success response
+    sendResponse(res, {
+      message: "Product updated successfully",
+      data: product,
+      statusCode: 200,
+    });
+  },
+);
+
+//! remove product
 export const removeProduct = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
