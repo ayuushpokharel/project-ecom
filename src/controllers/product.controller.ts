@@ -100,6 +100,9 @@ export const createProduct = catchAsync(
     if (!p_category) throw new AppError("Invalid category", 400);
     if (!p_brand) throw new AppError("Invalid brand", 400);
 
+    product.category = p_category._id;
+    product.brand = p_brand._id;
+
     //* upload cover image to cloudinary
     const { path, public_id } = await sendFileToCLoudinary(
       cover_image[0],

@@ -2,6 +2,10 @@ import express from "express";
 import { multerUpload } from "../middlewares/multer.middleware";
 import {
   createProduct,
+  getByBrand,
+  getByCategory,
+  getFeaturedProducts,
+  getNewProducts,
   getProductById,
   getProducts,
   removeProduct,
@@ -45,15 +49,15 @@ router.put(
 router.delete("/:id", authenticate(Only_Admins), removeProduct);
 
 //! get by category
-router.get("/category/:categoryId", getProducts);
+router.get("/category/:categoryId", getByCategory);
 
 //! get by brand
-router.get("/brand/:brandId", getProducts);
+router.get("/brand/:brandId", getByBrand);
 
 //! get new arrivals
-router.get("/new-arrivals", getProducts);
+router.get("/new-arrivals", getNewProducts);
 
 //! get all featured products
-router.get("/featured", getProducts);
+router.get("/featured", getFeaturedProducts);
 
 export default router;
