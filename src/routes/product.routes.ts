@@ -20,9 +20,6 @@ const upload = multerUpload();
 //! get all
 router.get("/", getProducts);
 
-//! get by id
-router.get("/:id", getProductById);
-
 //! create
 router.post(
   "/",
@@ -59,5 +56,8 @@ router.get("/new-arrivals", getNewProducts);
 
 //! get all featured products
 router.get("/featured", getFeaturedProducts);
+
+//! get by id
+router.get("/:id", getProductById);
 
 export default router;
